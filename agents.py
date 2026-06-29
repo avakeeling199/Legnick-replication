@@ -67,6 +67,20 @@ class Household(mesa.Agent):
         if self.income == 0:
             self.w_h = self.w_h * 0.9
 
+    def search_connections(self, psi_price, xi):
+        if random.random() < psi_price:
+            typeA = random.choice(self.type_a_connections)
+            all_firms = set(self.model.agents.select(agent_type=Firm))
+            no_type_as = list(all_firms - set(self.type_a_connections))
+            weights = [len(f.workers) for f in no_type_as]
+            new_firm = random.choices(no_type_as, weights=weights, k=1)[0]
+
+            if new_firm.p_f < xi * typeA.p_f:
+                self.type_a_connections.remove(typeA)
+                self.type_a_connections.append(new_firm)
+            
+            
+
 class Firm(mesa.Agent):
     """Firm agents"""
 

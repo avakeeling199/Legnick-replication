@@ -7,7 +7,8 @@ class LegnickModel(mesa.Model):
     """the Legnick model"""
     
     def __init__(self, n_households = 1000, n_firms = 100, seed=333, alpha = 0.9, n = 7, ld = 3, chi = 0.1, gamma = 24, delta = 0.019,
-                    phi_emp_upper = 1, phi_emp_lower = 0.25, phi_price_lower = 1.025, phi_price_upper = 1.15, vartheta = 0.02, theta = 0.75):
+                    phi_emp_upper = 1, phi_emp_lower = 0.25, phi_price_lower = 1.025, phi_price_upper = 1.15, vartheta = 0.02, theta = 0.75,
+                    psi_price = 0.25, xi = 0.01):
         super().__init__(rng=seed)
         self.n_households = n_households
         self.n_firms = n_firms
@@ -24,6 +25,8 @@ class LegnickModel(mesa.Model):
         self.phi_price_upper = phi_price_upper
         self.vartheta = vartheta
         self.theta = theta
+        self.psi_price = psi_price
+        self.xi = xi
 
         # create agents
         Household.create_agents(model=self, n=n_households)
