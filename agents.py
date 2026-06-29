@@ -39,7 +39,6 @@ class Household(mesa.Agent):
         og_demand = demand
         shops = random.sample(self.type_a_connections, len(self.type_a_connections))
         for shop in shops[:n]:
-            shop = random.choice(self.type_a_connections)
             if shop.i_f >= demand and self.m_h >= (shop.p_f * demand):
                 self.m_h -= shop.p_f * demand
                 shop.m_f += shop.p_f * demand
@@ -89,6 +88,9 @@ class Firm(mesa.Agent):
         firm pays wages to all workers
         either at set wage rate or if cant afford, drop wage
         """
+        # add buffer to liquidity and then reset to 0
+        self.m_f += self.buffer
+        self.buffer = 0
         if self.m_f >= self.w_f * self.l_f:
             for h in self.workers:
                 self.m_f -= self.w_f
@@ -122,6 +124,6 @@ class Firm(mesa.Agent):
             total_liquid = sum(h.m_h for h in households)
             for h in households:
                 h.m_h += (self.m_f / total_liquid) * h.m_h
-        self.m_f = self.buffer
+        self.m_f = 0
 
 

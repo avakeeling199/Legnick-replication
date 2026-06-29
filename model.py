@@ -51,7 +51,7 @@ class LegnickModel(mesa.Model):
         self.agents.select(agent_type=Household).do("buy_goods", n=self.n)
         
         # firms produce
-        self.agents.select(agent_type=Firm).do("produce")
+        self.agents.select(agent_type=Firm).do("produce", ld=self.ld)
 
 
         if self.counter % 21 == 0:
