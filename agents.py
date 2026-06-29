@@ -12,6 +12,8 @@ class Household(mesa.Agent):
         self.m_h = 0.0 # liquidity
         self.type_a_connections = [] # list of firms 
         self.type_b_connection = None # employment
+        self.c_r_h = 0 # demand
+        self.income = 0 #income from last month
 
 
 class Firm(mesa.Agent):
@@ -24,3 +26,5 @@ class Firm(mesa.Agent):
         self.i_f = 0.0 # inventory
         self.p_f = 1.0 # goods price
         self.w_f = 1.0 # wage rate
+        self.l_f = 0 # no of workers?
+
