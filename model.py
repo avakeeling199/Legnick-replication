@@ -66,7 +66,7 @@ class LegnickModel(mesa.Model):
 
             # households:
             # adjust w_h depending on income
-            self.agents.select(agent_type=Firm).do("adjust_reservation_wage")
+            self.agents.select(agent_type=Household).do("adjust_reservation_wage")
 
 
 
