@@ -70,7 +70,7 @@ class LegnickModel(mesa.Model):
             # each search for better type_a connections
             self.agents.select(agent_type=Household).do("search_connections", psi_price=self.psi_price, xi=self.xi, psi_quant=self.psi_quant)
             # job search 
-            self.agents.select(agent_type=Household).do("job_search")
+            self.agents.select(agent_type=Household).do("job_search", beta=self.beta, n_firms=self.n_firms, pie=self.pie)
             # decide how much m_h to spend on consumption goods
             self.agents.select(agent_type=Household).do("monthly_consumption", alpha=self.alpha)
             

@@ -82,7 +82,7 @@ class Household(mesa.Agent):
                 new_firm = random.choice(no_type_as)
             else:
                 new_firm = random.choices(no_type_as, weights=weights, k=1)[0]
-                
+
             if new_firm.p_f < (1 - xi) * typeA.p_f:
                 self.type_a_connections.remove(typeA)
                 self.type_a_connections.append(new_firm)
@@ -233,9 +233,11 @@ class Firm(mesa.Agent):
 
     def fire_workers(self):
         """ fire workers from last month - 1 month delay"""
+        
         for h in self.to_fire:
-            self.workers.remove(h)
-            h.type_b_connection = None
+            if h in self.workers:
+                self.workers.remove(h)
+                h.type_b_connection = None
         self.to_fire = []
 
     def set_prices(self, phi_price_upper, phi_price_lower, ld, theta, phi_emp_upper, vartheta, phi_emp_lower):
