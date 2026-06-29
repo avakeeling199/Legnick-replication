@@ -8,7 +8,7 @@ class LegnickModel(mesa.Model):
     
     def __init__(self, n_households = 1000, n_firms = 100, seed=333, alpha = 0.9, n = 7, ld = 3, chi = 0.1, gamma = 24, delta = 0.019,
                     phi_emp_upper = 1, phi_emp_lower = 0.25, phi_price_lower = 1.025, phi_price_upper = 1.15, vartheta = 0.02, theta = 0.75,
-                    psi_price = 0.25, xi = 0.01, psi_quant = 0.25):
+                    psi_price = 0.25, xi = 0.01, psi_quant = 0.25, beta = 5, pie = 0.1):
         super().__init__(rng=seed)
         self.n_households = n_households
         self.n_firms = n_firms
@@ -17,6 +17,7 @@ class LegnickModel(mesa.Model):
         self.n = n
         self.ld = ld
         self.chi = chi
+        self.beta = beta
         self.gamma = gamma
         self.delta = delta
         self.phi_emp_upper = phi_emp_upper
@@ -28,6 +29,7 @@ class LegnickModel(mesa.Model):
         self.psi_price = psi_price
         self.xi = xi
         self.psi_quant = psi_quant
+        self.pie = pie
 
         # create agents
         Household.create_agents(model=self, n=n_households)
@@ -66,7 +68,9 @@ class LegnickModel(mesa.Model):
             
             # households:
             # each search for better type_a connections
-            # if type_b_connection = None, go to random f to search for open position
+            self.agents.select(agent_type=Household).do("search_connections", psi_price=self.psi_price, xi=self.xi, psi_quant=self.psi_quant)
+            # job search 
+            self.agents.select(agent_type=Household).do("job_search")
             # decide how much m_h to spend on consumption goods
             self.agents.select(agent_type=Household).do("monthly_consumption", alpha=self.alpha)
             

@@ -94,6 +94,41 @@ class Household(mesa.Agent):
                 self.type_a_connections.remove(shop)
                 new_shop = random.choice(no_type_as)
                 self.type_a_connections.append(new_shop)
+        
+        self.demand_const = False
+        self.demand_const_shops = {}
+
+    def job_search(self, beta, n_firms, pie):
+        # unemployed
+        if self.type_b_connection == None:
+            firms = random.sample(list(self.model.agents.select(agent_type=Firm)), n_firms)
+            for f in firms[:beta]:
+                if f.n_positions > len(f.workers):
+                    if f.w_f >= self.w_h:
+                        self.type_b_connection = f
+                        f.workers.append(self)
+                        break
+                else:
+                    continue
+        # satisfied
+        else:
+            if self.type_b_connection.w_f >= self.w_h:
+                if random.random() < pie:
+                    f = random.choice(list(self.model.agents.select(agent_type=Firm)))
+                    if f.n_positions > len(f.workers):
+                        if f.w_f >= self.type_b_connection.w_f:
+                            self.type_b_connection.workers.remove(self)
+                            self.type_b_connection = f
+                            f.workers.append(self)
+            # unsatisfied
+            else: 
+                f = random.choice(list(self.model.agents.select(agent_type=Firm)))
+                if f.n_positions > len(f.workers):
+                        if f.w_f >= self.type_b_connection.w_f:
+                            self.type_b_connection.workers.remove(self)
+                            self.type_b_connection = f
+                            f.workers.append(self)
+
 
                 
 
