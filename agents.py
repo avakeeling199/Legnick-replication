@@ -9,8 +9,8 @@ class Household(mesa.Agent):
         # pass the params to parent class
         super().__init__(model)
 
-        self.w_h = 1.0 # reservation wage
-        self.m_h = 0.0 # liquidity
+        self.w_h = 3.0 # reservation wage
+        self.m_h = 100.0 # liquidity
         self.type_a_connections = [] # list of firms 
         self.type_b_connection = None # employment
         self.c_r_h = 0 # demand
@@ -49,9 +49,10 @@ class Household(mesa.Agent):
                 shop.i_f -= demand
                 demand = 0
             elif self.m_h < (shop.p_f * demand):
-                
                 demand_new = self.m_h / shop.p_f
                 self.m_h -= shop.p_f * demand_new
+                # stop from going -ve from fp drift 
+                self.m_h = max(self.m_h, 0.0)
                 shop.m_f += shop.p_f * demand_new
                 shop.i_f -= demand_new
                 demand -= demand_new
@@ -89,14 +90,17 @@ class Household(mesa.Agent):
             
         if self.demand_const == True:
             if random.random() < psi_quant:
+                
                 shops = list(self.demand_const_shops.keys())
                 weights = list(self.demand_const_shops.values())
                 shop = random.choices(shops, weights=weights, k=1)[0]
-                all_firms = set(self.model.agents.select(agent_type=Firm))
-                no_type_as = list(all_firms - set(self.type_a_connections))
-                self.type_a_connections.remove(shop)
-                new_shop = random.choice(no_type_as)
-                self.type_a_connections.append(new_shop)
+                if shop in self.type_a_connections:
+
+                    all_firms = set(self.model.agents.select(agent_type=Firm))
+                    no_type_as = list(all_firms - set(self.type_a_connections))
+                    self.type_a_connections.remove(shop)
+                    new_shop = random.choice(no_type_as)
+                    self.type_a_connections.append(new_shop)
         
         self.demand_const = False
         self.demand_const_shops = {}
@@ -143,7 +147,7 @@ class Firm(mesa.Agent):
         self.m_f = 0.0 # liquidity
         self.i_f = 0.0 # inventory
         self.p_f = 1.0 # goods price
-        self.w_f = 1.0 # wage rate
+        self.w_f = 3.0 # wage rate
         self.workers = [] # list of workers
         self.buffer = 0
         self.n_positions = 10
@@ -227,9 +231,10 @@ class Firm(mesa.Agent):
 
         if self.i_f < i_f_lowerbar:
             self.n_positions += 1
-        elif self.i_f > i_f_upperbar:
+        elif self.i_f > i_f_upperbar and len(self.workers) > 0:
             to_fire = random.choice(self.workers)
             self.to_fire.append(to_fire)
+
 
     def fire_workers(self):
         """ fire workers from last month - 1 month delay"""
@@ -263,6 +268,8 @@ class Firm(mesa.Agent):
                 # up prices with prob theta 
                 if random.random() < theta:
                     self.p_f = self.p_f * (1 + v)
+
+        self.demand = 0
         
 
 
