@@ -73,11 +73,11 @@ class Household(mesa.Agent):
 
     def adjust_reservation_wage(self):
         """ adjust reservation wage according to last months income"""
-        if self.income > self.w_h:
-            self.w_h = self.income
-        if self.income == 0:
+        if self.type_b_connection is not None:
+            if self.income > self.w_h:
+                self.w_h = self.income
+        else:
             self.w_h = self.w_h * 0.9
-        self.income = 0
 
     def search_connections(self, psi_price, xi, psi_quant):
         if random.random() < psi_price:
@@ -161,10 +161,7 @@ class Firm(mesa.Agent):
     def produce(self, ld):
         """produce goods"""
         l_f = len(self.workers)
-        old_i_f = self.i_f
         self.i_f += ld * l_f
-        if self.unique_id == 1001:
-            print(f"counter={self.model.counter}, workers={l_f}, before={old_i_f}, after={self.i_f}")
 
     def pay_wages(self):
         """
