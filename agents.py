@@ -48,6 +48,8 @@ class Household(mesa.Agent):
             shop.demand += demand
             if shop.i_f >= demand and self.m_h >= (shop.p_f * demand):
                 self.m_h -= shop.p_f * demand
+                # guard from going -ve 
+                self.m_h = min(self.m_h, 0.0)
                 shop.m_f += shop.p_f * demand
                 shop.i_f -= demand
                 demand = 0
@@ -62,6 +64,8 @@ class Household(mesa.Agent):
             elif shop.i_f < demand:  
                 self.demand_const = True  
                 self.m_h -= shop.p_f * shop.i_f
+                # guard from going -ve 
+                self.m_h = min(self.m_h, 0.0)
                 shop.m_f += shop.p_f * shop.i_f
                 self.demand_const_shops[shop] = self.demand_const_shops.get(shop, 0) + (demand - shop.i_f)
                 demand -= shop.i_f
