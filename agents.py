@@ -19,8 +19,6 @@ class Household(mesa.Agent):
         self.demand_const = False # was this h demand const?
         self.demand_const_shops = {}
 
-
-
     def monthly_consumption(self, alpha):
         """
         find each households monthly consumption need. 
@@ -79,13 +77,14 @@ class Household(mesa.Agent):
             self.w_h = self.income
         if self.income == 0:
             self.w_h = self.w_h * 0.9
+        self.income = 0
 
     def search_connections(self, psi_price, xi, psi_quant):
         if random.random() < psi_price:
             typeA = random.choice(self.type_a_connections)
             all_firms = set(self.model.agents.select(agent_type=Firm))
             no_type_as = list(all_firms - set(self.type_a_connections))
-            weights = [len(f.workers) for f in no_type_as]
+            weights = [max(1.0, len(f.workers)) for f in no_type_as]
             if sum(weights) == 0:
                 new_firm = random.choice(no_type_as)
             else:
@@ -140,9 +139,6 @@ class Household(mesa.Agent):
                             self.type_b_connection.workers.remove(self)
                             self.type_b_connection = f
                             f.workers.append(self)
-
-
-                
 
 
 class Firm(mesa.Agent):
@@ -231,7 +227,7 @@ class Firm(mesa.Agent):
 
         elif self.months_full > gamma:
             self.w_f = self.w_f * (1 - mu)
-            self.months_full += 1
+            self.months_full = 0
         else:
             self.months_full += 1
 
